@@ -15,9 +15,9 @@ class SS_Admin_Meta_Boxes
             'high'
         );
         add_meta_box(
-            'staff_title_meta_box',
-            'Title',
-            'SS_Admin_Meta_Boxes::display_title_meta_box',
+            'staff_job_title_meta_box',
+            'Job Title',
+            'SS_Admin_Meta_Boxes::display_job_title_meta_box',
             'ss_staff_member',
             'normal',
             'high'
@@ -33,6 +33,29 @@ class SS_Admin_Meta_Boxes
         );
 
         add_action('save_post', 'SS_Admin_Meta_Boxes::save_staff_meta', 1, 2);
+        add_filter('manage_ss_staff_member_posts_columns', 'SS_Admin_Meta_Boxes::manage_posts_columns', 10, 1);
+        add_filter('manage_ss_staff_member_posts_custom_column', 'SS_Admin_Meta_Boxes::update_custom_column', 10, 2);
+    }
+
+    public static function update_custom_column($column, $postId)
+    {
+        if ($column === 'image') {
+            echo get_the_post_thumbnail($postId, array(80, 80));
+        } else {
+            echo get_post_meta($postId, 'name', true);
+        }
+    }
+
+    public static function manage_posts_columns($columns)
+    {
+        return array(
+            'cb' => $columns['cb'],
+            'name' => 'Name',
+            'image' => 'Image',
+            'job_title' => 'Job Title',
+            'bio' => 'Bio',
+            'date' => $columns['date']
+        );
     }
 
     public static function display_bio_meta_box()
@@ -42,11 +65,11 @@ class SS_Admin_Meta_Boxes
         echo '<textarea rows="5" cols="100%" name="staff_bio" class="widefat">' . esc_textarea($bio) . '</textarea>';
     }
 
-    public static function display_title_meta_box()
+    public static function display_job_title_meta_box()
     {
         global $post;
-        $title = get_post_meta($post->ID, 'title', true);
-        echo '<input type="text" name="staff_title" value="' . esc_textarea($title) . '" class="widefat" placeholder="Staff\'s Title" />';
+        $title = get_post_meta($post->ID, 'job_title', true);
+        echo '<input type="text" name="staff_job_title" value="' . esc_textarea($title) . '" class="widefat" placeholder="Staff\'s Job Title" />';
     }
 
     public static function display_name_meta_box()
@@ -68,15 +91,15 @@ class SS_Admin_Meta_Boxes
         }
 
         if (!isset(
-            $_POST['staff_name'],
-            $_POST['staff_title'],
-            $_POST['staff_bio']
-            ) || !wp_verify_nonce($_POST['staff_fields'], basename(__FILE__)) ) {
-           return $postId;
+                $_POST['staff_name'],
+                $_POST['staff_job_title'],
+                $_POST['staff_bio']
+            ) || !wp_verify_nonce($_POST['staff_fields'], basename(__FILE__))) {
+            return $postId;
         }
 
         $staffMeta['name'] = esc_textarea($_POST['staff_name']);
-        $staffMeta['title'] = esc_textarea($_POST['staff_title']);
+        $staffMeta['job_title'] = esc_textarea($_POST['staff_job_title']);
         $staffMeta['bio'] = esc_textarea($_POST['staff_bio']);
 
         foreach ($staffMeta as $key => $value) {
