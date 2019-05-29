@@ -58,11 +58,13 @@ class StaffShowcase
     {
         add_action('init', 'SS_Post_Types::init');
         add_action('init', 'SS_Admin::init');
+        add_action('init', 'SS_Shortcodes::init');
     }
 
     public function includes()
     {
         require_once RN_SS_ABSPATH . 'includes/class-ss-post-types.php';
+        require_once RN_SS_ABSPATH . 'includes/class-ss-shortcodes.php';
         require_once RN_SS_ABSPATH . 'includes/admin/class-ss-admin.php';
     }
 }
