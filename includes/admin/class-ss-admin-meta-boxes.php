@@ -42,7 +42,7 @@ class SS_Admin_Meta_Boxes
         if ($column === 'image') {
             echo get_the_post_thumbnail($postId, array(80, 80));
         } else {
-            echo get_post_meta($postId, 'name', true);
+            echo get_post_meta($postId, $column, true);
         }
     }
 
